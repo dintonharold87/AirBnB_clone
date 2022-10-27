@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# This classes that inherits from BaseModel
+"""This classes that inherits from BaseModel"""
 
 from models.base_model import BaseModel
 
