@@ -9,11 +9,12 @@ import sys
 import json
 import re
 
+
 class HBNBCommand(cmd.Cmd):
     """Creates a console class"""
     prompt = '(hbnb) '
     lastcmd = 'exit'
-        
+
     def emptyline(self):
         return
 
@@ -50,7 +51,7 @@ class HBNBCommand(cmd.Cmd):
             print("** instance id missing **")
         else:
             if "{}.{}".format(words[0], words[1]) in storage.all():
-                    print(storage.all()["{}.{}".format(words[0], words[1])])
+                print(storage.all()["{}.{}".format(words[0], words[1])])
             else:
                 print("** no instance found **")
 
@@ -83,8 +84,8 @@ class HBNBCommand(cmd.Cmd):
                     y.append(str(v))
             else:
                 for k, v in storage.all().items():
-                    l = re.search(arg, k)
-                    if l != None:
+                    li = re.search(arg, k)
+                    if li is not None:
                         y.append(str(v))
             print(y)
 
@@ -100,7 +101,7 @@ class HBNBCommand(cmd.Cmd):
         if len(words) == 1:
             print("** instance id missing **")
             return
-        key = "{}.{}".format(words[0], words[1]) 
+        key = "{}.{}".format(words[0], words[1])
         if key not in storage.all():
             print("** no instance found **")
             return
