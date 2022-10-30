@@ -7,7 +7,7 @@ from models import storage
 import cmd
 import sys
 import json
-
+import re
 
 class HBNBCommand(cmd.Cmd):
     """Creates a console class"""
@@ -44,18 +44,49 @@ class HBNBCommand(cmd.Cmd):
             return
 
         words = line.split(" ")
-        if words[0] != "BaseModel":
+        if words[0] not in storage.classes():
             print("** class doesn't exist **")
         if len(words) < 2 or words[1] == "":
             print("** instance id missing **")
         else:
-            with open("file.json", 'r') as f:
-                j = json.load(f)
-            try:
-                if j["BaseModel.{}".format(words[1])]['id']:
-                    print(storage.all()["BaseModel.{}".format(words[1])])
-            except KeyError:
+            if "{}.{}".format(words[0], words[1]) in storage.all():
+                    print(storage.all()["{}.{}".format(words[0], words[1])])
+            else:
                 print("** no instance found **")
+
+    def do_destroy(self, line):
+        """destroy a basemodel"""
+        if line == "":
+            print("** class name missing **")
+
+        words = line.split(" ")
+        if words[0] not in storage.classes():
+            print("** class doesn't exist **")
+        if len(words) < 2 or words[1] == "":
+            print("** instance id missing **")
+        else:
+            key = "{}.{}".format(words[0], words[1])
+            if key in storage.all():
+                del storage.all()[key]
+                storage.save()
+            else:
+                print("** no instance found **")
+
+    def do_all(self, arg):
+        'prints all string representation of all instaces'
+        if arg != "" and arg not in storage.classes():
+            print("** class doesn't exist **")
+        else:
+            y = []
+            if arg == '':
+                for k, v in storage.all().items():
+                    y.append(str(v))
+            else:
+                for k, v in storage.all().items():
+                    l = re.search(arg, k)
+                    if l != None:
+                        y.append(str(v))
+            print(y)
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
