@@ -137,47 +137,20 @@ class HBNBCommand(cmd.Cmd):
                     del storage.all()[key]
                     storage.save()
 
-    def do_all(self, arg):
-        'prints all string representation of all instaces'
-        if arg != "" and arg not in storage.classes():
-            print("** class doesn't exist **")
-        else:
-            y = []
-            if arg == '':
-                for k, v in storage.all().items():
-                    y.append(str(v))
+    def do_all(self, line):
+        """Prints all string representation of all instances.
+        """
+        if line != "":
+            words = line.split(' ')
+            if words[0] not in storage.classes():
+                print("** class doesn't exist **")
             else:
-                for k, v in storage.all().items():
-                    li = re.search(arg, k)
-                    if li is not None:
-                        y.append(str(v))
-            print(y)
-
-    def do_update(self, line):
-        'updates an instance based on the classname and id'
-        if line == "":
-            print("** class name missing **")
-            return
-        words = line.split(" ")
-        if words[0] not in storage.classes():
-            print("** class doesn't exist **")
-            return
-        if len(words) == 1:
-            print("** instance id missing **")
-            return
-        key = "{}.{}".format(words[0], words[1])
-        if key not in storage.all():
-            print("** no instance found **")
-            return
-        if len(words) == 2:
-            print("** attribute name missing **")
-            return
-        if len(words) == 3:
-            print("** value missing **")
-            return
-        storage.reload()
-        setattr(storage.all()[key], words[2], words[3])
-        storage.all()[key].save()
+                li = [str(obj) for key, obj in storage.all().items() 
+                        if type(obj).__name__ == words[0]]
+                print(li)
+        else:
+            li = [str(obj) for key, obj in storage.all().items()]
+            print(li)
 
     def do_count(self, line):
         """Counts the instances of a class.
@@ -192,6 +165,53 @@ class HBNBCommand(cmd.Cmd):
                 k for k in storage.all() if k.startswith(
                     words[0] + '.')]
             print(len(matches))
+
+    def do_update(self, line):
+        """Updates an instance by adding or updating attribute.
+        """
+        if line == "" or line is None:
+            print("** class name missing **")
+            return
+
+        rex = r'^(\S+)(?:\s(\S+)(?:\s(\S+)(?:\s((?:"[^"]*")|(?:(\S)+)))?)?)?'
+        match = re.search(rex, line)
+        classname = match.group(1)
+        uid = match.group(2)
+        attribute = match.group(3)
+        value = match.group(4)
+        if not match:
+            print("** class name missing **")
+        elif classname not in storage.classes():
+            print("** class doesn't exist **")
+        elif uid is None:
+            print("** instance id missing **")
+        else:
+            key = "{}.{}".format(classname, uid)
+            if key not in storage.all():
+                print("** no instance found **")
+            elif not attribute:
+                print("** attribute name missing **")
+            elif not value:
+                print("** value missing **")
+            else:
+                cast = None
+                if not re.search('^".*"$', value):
+                    if '.' in value:
+                        cast = float
+                    else:
+                        cast = int
+                else:
+                    value = value.replace('"', '')
+                attributes = storage.attributes()[classname]
+                if attribute in attributes:
+                    value = attributes[attribute](value)
+                elif cast:
+                    try:
+                        value = cast(value)
+                    except ValueError:
+                        pass  # fine, stay a string then
+                setattr(storage.all()[key], attribute, value)
+                storage.all()[key].save()
 
 
 if __name__ == '__main__':
