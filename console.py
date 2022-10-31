@@ -28,9 +28,11 @@ class HBNBCommand(cmd.Cmd):
         """
         return True
 
-    def do_EOF(self, arg):
-        'Quit command to exit the program\n'
-        sys.exit(1)
+    def do_EOF(self, line):
+        """Handles End Of File character.
+        """
+        print()
+        return True
 
     def do_create(self, arg):
         'Creates a new instance of BaseModdel'
