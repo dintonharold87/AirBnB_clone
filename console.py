@@ -88,17 +88,17 @@ class HBNBCommand(cmd.Cmd):
         print()
         return True
 
-    def do_create(self, arg):
-        'Creates a new instance of BaseModdel'
-        if arg == "":
+    def do_create(self, line):
+        """Creates an instance.
+        """
+        if line == "" or line is None:
             print("** class name missing **")
-        elif arg != 'BaseModel':
+        elif line not in storage.classes():
             print("** class doesn't exist **")
         else:
-            dummy = BaseModel()
-            dummy.save()
-            dict_dummy = dummy.to_dict()
-            print(dict_dummy['id'])
+            b = storage.classes()[line]()
+            b.save()
+            print(b.id)
 
     def do_show(self, line):
         "Prints the string rep of an instance"
