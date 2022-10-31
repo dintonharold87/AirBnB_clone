@@ -119,22 +119,23 @@ class HBNBCommand(cmd.Cmd):
                     print(storage.all()[key])
 
     def do_destroy(self, line):
-        """destroy a basemodel"""
-        if line == "":
+        """Deletes an instance based on the class name and id.
+        """
+        if line == "" or line is None:
             print("** class name missing **")
-
-        words = line.split(" ")
-        if words[0] not in storage.classes():
-            print("** class doesn't exist **")
-        if len(words) < 2 or words[1] == "":
-            print("** instance id missing **")
         else:
-            key = "{}.{}".format(words[0], words[1])
-            if key in storage.all():
-                del storage.all()[key]
-                storage.save()
+            words = line.split(' ')
+            if words[0] not in storage.classes():
+                print("** class doesn't exist **")
+            elif len(words) < 2:
+                print("** instance id missing **")
             else:
-                print("** no instance found **")
+                key = "{}.{}".format(words[0], words[1])
+                if key not in storage.all():
+                    print("** no instance found **")
+                else:
+                    del storage.all()[key]
+                    storage.save()
 
     def do_all(self, arg):
         'prints all string representation of all instaces'
