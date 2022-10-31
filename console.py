@@ -101,21 +101,22 @@ class HBNBCommand(cmd.Cmd):
             print(b.id)
 
     def do_show(self, line):
-        "Prints the string rep of an instance"
-        if line == "":
+        """Prints the string representation of an instance.
+        """
+        if line == "" or line is None:
             print("** class name missing **")
-            return
-
-        words = line.split(" ")
-        if words[0] not in storage.classes():
-            print("** class doesn't exist **")
-        if len(words) < 2 or words[1] == "":
-            print("** instance id missing **")
         else:
-            if "{}.{}".format(words[0], words[1]) in storage.all():
-                print(storage.all()["{}.{}".format(words[0], words[1])])
+            words = line.split(' ')
+            if words[0] not in storage.classes():
+                print("** class doesn't exist **")
+            elif len(words) < 2:
+                print("** instance id missing **")
             else:
-                print("** no instance found **")
+                key = "{}.{}".format(words[0], words[1])
+                if key not in storage.all():
+                    print("** no instance found **")
+                else:
+                    print(storage.all()[key])
 
     def do_destroy(self, line):
         """destroy a basemodel"""
